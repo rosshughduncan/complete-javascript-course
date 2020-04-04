@@ -257,3 +257,157 @@ function interviewQuestion(job) {
 
 interviewQuestion('teacher')('John');
 interviewQuestion('designer')('Mike');*/
+
+// Bind method
+/*
+var john = {
+  name: 'John',
+  age: 26,
+  job: 'teacher',
+  presentation: function(style, timeOfDay) {
+    if (style === 'formal') {
+      console.log('Good ' + timeOfDay + ', Ladies and gentlemen! I\'m ' + this.name + ', I\'m a ' + this.job + ' and I\'m ' + this.age + ' years old.');
+    }
+    else if (style === 'friendly') {
+      console.log('Hey! What\'s up? I\'m ' + this.name + ', I\'m a ' + this.job + ' and I\'m ' + this.age + ' years old. Have a nice ' + timeOfDay + '.');
+    }
+  }
+};
+
+var emily = {
+  name: 'Emily',
+  age: 35,
+  job: 'designer'
+};
+
+john.presentation('formal', 'morning');
+
+// Method borrowing with call method
+// First argument is the 'this' variable
+john.presentation.call(emily, 'friendly', 'afternoon');
+
+// Method does not expect to receive and array, so will not work
+//john.presentation.apply(emily, ['friendly', 'afternoon']);
+
+// Bind Method
+// Sets this variable explicitly
+// Difference is bind doesn't immediately call the function, it makes a copy
+// Good for functions with preset arguments
+
+var johnFriendly = john.presentation.bind(john, 'friendly');
+
+// Carrying - using a function based on another function with some preset parameters
+johnFriendly('morning');
+johnFriendly('night');
+
+var emilyFormal = john.presentation.bind(emily, 'formal');
+
+emilyFormal('afternoon'); */
+
+
+// Bind with callback Functions
+/*
+var years = [1990, 1965, 1937, 2005, 1998];
+
+function arrayCalc(arr, fn) {
+    var arrRes = []; // Empty array
+    for (var i = 0; i < arr.length; i++) {
+        arrRes.push(fn(arr[i])); // Generic function processing an array
+    }
+    return arrRes;
+}
+
+function calculateAge(el) { // Generic element placement
+    return 2016 - el;
+}
+
+function isFullAge(limit, el) {
+    return el >= limit;
+}
+
+var ages = arrayCalc(years, calculateAge);
+
+// Presetting the argument
+var fullJapan = arrayCalc(ages, isFullAge.bind(this, 20));
+
+console.log(ages);
+console.log(fullJapan); */
+
+
+
+
+// Coding challenge 7
+
+var Question = function(questionInput, correctAnswerIDInput, possibleAnswersInput) {
+  this.question = questionInput;
+  this.correctAnswerID = correctAnswerIDInput;
+  this.possibleAnswers = possibleAnswersInput;
+  this.showQuestion = function(arr) {
+    var toReturn = this.question + '\n';
+    for (var i = 0; i < arr.length; i++) {
+      if (this.possibleAnswers.includes(arr[i].answerID)) {
+        toReturn += (i+1) + '. ' + arr[i].answerText + '\n';
+      }
+    }
+    return toReturn;
+  }
+  this.isAnswerCorrect = function(input) {
+    // Setting the answer to 0 index
+    input -= 1;
+    if (input === this.correctAnswerID) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+};
+
+var Answer = function(answerIDInput, answerTextInput) {
+  this.answerID = answerIDInput;
+  this.answerText = answerTextInput;
+};
+
+var questions = [
+  new Question ('What is the capital city of Thailand?', 2, [0, 1, 2, 3, 4]),
+  new Question ('How much oxygen is in the air?', 7, [5, 6, 7]),
+  new Question ('What is the answer of life the universe and everything?', 10, [8, 9, 10])
+];
+
+var answers = [
+  new Answer (0, 'Chiang Mai'),
+  new Answer (1, 'London'),
+  new Answer (2, 'Bangkok'),
+  new Answer (3, 'Beijing'),
+  new Answer (4, 'Paris'),
+  new Answer (5, '100%'),
+  new Answer (6, '50%'),
+  new Answer (7, '21%'),
+  new Answer (8, 'Chocolate'),
+  new Answer (9, 'Happiness'),
+  new Answer (10, '42')
+];
+
+function quiz() {
+  var result;
+  for (var i = 0; i < questions.length; i++) {
+    result = false;
+    console.log('Question ' + (i+1) + ':');
+    console.log(questions[i].showQuestion(answers));
+    while (!result) {
+      result = prompt('Enter the answer to question ' + (i+1) + '.');
+      // Result will return null if cancel box is clicked or nothing is input
+      if (result === null) {
+        console.log('You exited the quiz. Type quiz() to start again.');
+        break;
+      }
+      else {
+        result = questions[i].isAnswerCorrect(result);
+        result === true ? console.log('Correct.') : console.log('Incorrect, try again.');
+      }
+    }
+    if (result === null) {break;}
+  }
+}
+
+console.log('Type quiz() to enter the quiz.');
