@@ -338,76 +338,127 @@ console.log(fullJapan); */
 
 // Coding challenge 7
 
-var Question = function(questionInput, correctAnswerIDInput, possibleAnswersInput) {
-  this.question = questionInput;
-  this.correctAnswerID = correctAnswerIDInput;
-  this.possibleAnswers = possibleAnswersInput;
-  this.showQuestion = function(arr) {
-    var toReturn = this.question + '\n';
-    for (var i = 0; i < arr.length; i++) {
-      if (this.possibleAnswers.includes(arr[i].answerID)) {
-        toReturn += (i+1) + '. ' + arr[i].answerText + '\n';
+// Contain code in an immediately invoked function expression
+// Contains its own scope, protects our code from that of another programmer's
+// other variables won't interfere with our statements
+(function() {
+  var Question = function(questionInput, correctAnswerIDInput, possibleAnswersInput) {
+    this.question = questionInput;
+    this.correctAnswerID = correctAnswerIDInput;
+    this.possibleAnswers = possibleAnswersInput;
+    this.showQuestion = function(arr) {
+      var toReturn = this.question + '\n';
+      for (var i = 0; i < arr.length; i++) {
+        if (this.possibleAnswers.includes(arr[i].answerID)) {
+          toReturn += (i+1) + '. ' + arr[i].answerText + '\n';
+        }
       }
+      return toReturn;
     }
-    return toReturn;
-  }
-  this.isAnswerCorrect = function(input) {
-    // Setting the answer to 0 index
-    input -= 1;
-    if (input === this.correctAnswerID) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-};
-
-var Answer = function(answerIDInput, answerTextInput) {
-  this.answerID = answerIDInput;
-  this.answerText = answerTextInput;
-};
-
-var questions = [
-  new Question ('What is the capital city of Thailand?', 2, [0, 1, 2, 3, 4]),
-  new Question ('How much oxygen is in the air?', 7, [5, 6, 7]),
-  new Question ('What is the answer of life the universe and everything?', 10, [8, 9, 10])
-];
-
-var answers = [
-  new Answer (0, 'Chiang Mai'),
-  new Answer (1, 'London'),
-  new Answer (2, 'Bangkok'),
-  new Answer (3, 'Beijing'),
-  new Answer (4, 'Paris'),
-  new Answer (5, '100%'),
-  new Answer (6, '50%'),
-  new Answer (7, '21%'),
-  new Answer (8, 'Chocolate'),
-  new Answer (9, 'Happiness'),
-  new Answer (10, '42')
-];
-
-function quiz() {
-  var result;
-  for (var i = 0; i < questions.length; i++) {
-    result = false;
-    console.log('Question ' + (i+1) + ':');
-    console.log(questions[i].showQuestion(answers));
-    while (!result) {
-      result = prompt('Enter the answer to question ' + (i+1) + '.');
-      // Result will return null if cancel box is clicked or nothing is input
-      if (result === null) {
-        console.log('You exited the quiz. Type quiz() to start again.');
-        break;
+    this.isAnswerCorrect = function(input) {
+      // Setting the answer to 0 index
+      input -= 1;
+      if (input === this.correctAnswerID) {
+        return true;
       }
       else {
-        result = questions[i].isAnswerCorrect(result);
-        result === true ? console.log('Correct.') : console.log('Incorrect, try again.');
+        return false;
       }
     }
-    if (result === null) {break;}
-  }
-}
+  };
 
-console.log('Type quiz() to enter the quiz.');
+  var Answer = function(answerIDInput, answerTextInput) {
+    this.answerID = answerIDInput;
+    this.answerText = answerTextInput;
+  };
+
+  var questions = [
+    new Question ('What is the capital city of Thailand?', 2, [0, 1, 2, 3, 4]),
+    new Question ('How much oxygen is in the air?', 7, [5, 6, 7]),
+    new Question ('What is the answer of life the universe and everything?', 10, [8, 9, 10])
+  ];
+
+  var answers = [
+    new Answer (0, 'Chiang Mai'),
+    new Answer (1, 'London'),
+    new Answer (2, 'Bangkok'),
+    new Answer (3, 'Beijing'),
+    new Answer (4, 'Paris'),
+    new Answer (5, '100%'),
+    new Answer (6, '50%'),
+    new Answer (7, '21%'),
+    new Answer (8, 'Chocolate'),
+    new Answer (9, 'Happiness'),
+    new Answer (10, '42')
+  ];
+
+  function quiz() {
+    var result, sc, keepScore;
+
+    keepScore = score();
+
+    //Storing the question numbers
+    var round = {
+      selector: -1,
+      lastSelector: -1,
+      copySelector: function() {
+        this.selector = this.lastSelector;
+      },
+      newRound: function (length) {
+        this.selector = randNum(length);
+        while (this.selector === this.lastSelector) {
+          this.selector = randNum(length);
+        }
+      }
+    };
+
+    // Running the game
+    while (!isExit(result)) {
+      result = false;
+      round.newRound(questions.length);
+      // Ensure that the question selected isn't the same question as before
+      console.log('Question ' + (round.selector + 1) + ':');
+      console.log(questions[round.selector].showQuestion(answers));
+      while (!result) {
+        result = prompt('Enter the answer to question ' + (round.selector + 1) + '. Type exit to quit the game.');
+        // Result will return null if cancel box is clicked or nothing is input
+        if (isExit(result)) {
+          // Exit out of the game
+          console.log('You exited the quiz. Type quiz() to start again.');
+          return;
+        }
+        else {
+          result = questions[round.selector].isAnswerCorrect(result);
+          result === true ? console.log('Correct. ') : console.log('Incorrect, try again.');
+          sc = keepScore(result);
+          console.log('Your score is ' + sc);
+        }
+      }
+
+      // Storing the question number of the current round
+      round.copySelector();
+    }
+  }
+
+  function randNum(input) {
+    return Math.floor(Math.random() * input);
+  }
+
+  function isExit(input) {
+    return (input === null || input === 'exit');
+  }
+
+  function score() {
+    var sc = 0;
+    // Closure
+    return function returnScore(correct) {
+      if (correct) {
+        sc++;
+      }
+      return sc;
+    }
+  }
+
+  //console.log(score());
+  quiz();
+})();
