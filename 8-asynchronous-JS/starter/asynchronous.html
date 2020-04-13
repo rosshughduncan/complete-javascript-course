@@ -9,7 +9,137 @@
 <body>
     <h1>Asynchronous JavaScript</h1>
     <script>
-        
+        /*
+        const first = () => {
+          // this is synchronous code
+          console.log('Hey there');
+        }
+        const second = () => {
+          setTimeout(() => {
+            console.log('Async hey there');
+          }, 2000); // after 2 seconds have passed, the callback function will run
+        }
+        first();
+        second(); */
+
+        /*function getRecipe() {
+          // simulating the ajax call to get data from server
+          setTimeout(() => {
+            const recipeID = [523, 883, 432, 974];
+            console.log(recipeID);
+            setTimeout((id) => {
+              const recipe = {title: 'Fresh tomato pasta',
+                              publisher: 'Jonas'};
+              console.log(`${id}: ${recipe.title}`);
+              // if we have only one argument, we don't need parentheses
+              setTimeout(publisher => {
+                const recipe2 = {title: 'Italian pizza',
+                                 publisher: 'Jonas'};
+                console.log(recipe2);
+              }, 1500, recipe.publisher); // callback hell!!!!!!
+            }, 1000, recipeID[2]); // recipeID is a callback
+          }, 1500);
+        }
+        getRecipe(); */
+
+        // promises
+        /*
+        // passing in executor
+        // use resolve is promise was successful, use reject if promise was unsuccessful
+        const getIDs = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            // takes argument for result of promise
+            resolve([523, 883, 432, 974]);
+            //reject([523, 883, 432, 974]);
+          }, 1500);
+        });
+
+        const getRecipe = recipeID => {
+          return new Promise((resolve, reject) => {
+            setTimeout(ID => {
+              const recipe = {title: 'Fresh tomato pasta',
+                              publisher: 'Jonas'};
+              resolve(`${ID}: ${recipe.title}`);
+            }, 1500, recipeID);
+          });
+        };
+
+        const getRelated = publisher => {
+            return new Promise((resolve, reject) => {
+              setTimeout(pub => {
+                const recipe2 = {title: 'Italian pizza',
+                                 publisher: 'Jonas'};
+                resolve(`${pub}: ${recipe2.title}`);
+              }, 1500, publisher);
+            });
+        };
+
+        // then allows us to attach an event handler in case the promise is resolved
+        // likely that our function cannot fail
+        getIDs
+        .then(IDs => {
+          console.log(IDs);
+          return getRecipe(IDs[2]); // this will return a promise, we chain another then statement to handle the result of that resolved promise
+        })
+        .then(recipe => {
+          console.log(recipe);
+          return getRelated('Jonas');
+        })
+        .then(recipe2 => {
+          console.log(recipe2);
+        })
+        .catch(error => {
+          console.log('error'); // js assumes there's an error
+        }); */
+
+        // async await
+        /*
+        const getIDs = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            // takes argument for result of promise
+            resolve([523, 883, 432, 974]);
+            //reject([523, 883, 432, 974]);
+          }, 1500);
+        });
+
+        const getRecipe = recipeID => {
+          return new Promise((resolve, reject) => {
+            setTimeout(ID => {
+              const recipe = {title: 'Fresh tomato pasta',
+                              publisher: 'Jonas'};
+              resolve(`${ID}: ${recipe.title}`);
+            }, 1500, recipeID);
+          });
+        };
+
+        const getRelated = publisher => {
+            return new Promise((resolve, reject) => {
+              setTimeout(pub => {
+                const recipe2 = {title: 'Italian pizza',
+                                 publisher: 'Jonas'};
+                resolve(`${pub}: ${recipe2.title}`);
+              }, 1500, publisher);
+            });
+        };
+
+        async function getRecipesAW() {
+          // first promise
+          const IDs = await getIDs; // wait until promise finishes
+          console.log(IDs);
+          const recipe = await getRecipe(IDs[2]);
+          console.log(recipe);
+          const related = await getRelated('Jonas');
+          console.log(related);
+          return recipe;
+        }
+        getRecipesAW().then(result => console.log(`${result} is the best ever!`));
+        /*const rec = getRecipesAW();
+        // this is run synchronously, by the time we run it, our recipe function is still executing
+        console.log(rec); // will log the promise, but can't log anything to console straight away */
+
+        // ajax
+
+        fetch('https://crossorigin.me/https://www.metaweather.com/api/location/2487956/');
     </script>
 </body>
 </html>
